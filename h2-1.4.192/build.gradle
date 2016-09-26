@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('h2-1.4.192.jar'))

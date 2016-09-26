@@ -1,0 +1,1 @@
+include ':app', ':h2-1.4.192', ':commons-logging-1.2'
