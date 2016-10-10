@@ -33,7 +33,7 @@ public class CreateDB {
         return 0;
     }
 
-    private int populateH2(JSONObject jsonObject, Connection con){
+    private static int populateH2(JSONObject jsonObject, Connection con){
 
         Statement stmt;
 
@@ -54,6 +54,7 @@ public class CreateDB {
             return 1;
         } catch (SQLException e) {
             e.printStackTrace();
+            return 1;
         }
 
         try {

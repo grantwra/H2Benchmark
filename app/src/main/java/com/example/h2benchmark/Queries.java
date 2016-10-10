@@ -18,7 +18,7 @@ import java.sql.Statement;
 public class Queries {
 
     JSONObject workloadJsonObject;
-    Context context;
+    static Context context;
     Utils utils;
     //Double SELECT;
     //Double UPDATE;
@@ -62,14 +62,16 @@ public class Queries {
         return 0;
     }
 
-    private int H2Queries(){
+    private static int H2Queries(){
 
-        Connection con = utils.jdbcConnectionH2("H2Benchmark");
+        //Connection con = utils.jdbcConnectionH2("H2Benchmark");
+        Connection con = Utils.jdbcConnectionH2("H2Benchmark");
         Statement stmt;
         int sqlException = 0;
 
         try {
-            JSONArray benchmarkArray = workloadJsonObject.getJSONArray("benchmark");
+            //JSONArray benchmarkArray = workloadJsonObject.getJSONArray("benchmark");
+            JSONArray benchmarkArray = Utils.workloadJsonObject.getJSONArray("benchmark");
             for(int i = 0; i < benchmarkArray.length(); i ++){
                 JSONObject operationJson = benchmarkArray.getJSONObject(i);
                 Object operationObject = operationJson.get("op");
@@ -90,7 +92,12 @@ public class Queries {
                             //startBdb = System.currentTimeMillis();
                             //memBeforeQuery = utils.memoryAvailable(context);
                             if(query.contains("UPDATE")){
+                                //int tester =
                                 stmt.executeUpdate(query);
+                                //if(tester == 0 || tester < 0){
+                                    //throw new SQLiteException(query);
+                                //}
+                                stmt.close();
                             }
                             else {
                                 Boolean test = stmt.execute(query);
@@ -99,11 +106,14 @@ public class Queries {
                                 stmt.close();
 
                                 if (!test) {
-                                    throw new SQLiteException();
+                                    throw new SQLiteException(query);
+
                                 }
                             }
                             //double delta = endBdb - startBdb;
                             //double elapsedSeconds = delta / 1000.00000;
+                            //File file = new File(context.getFilesDir().getPath() + "/testH2");
+                            //FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_APPEND);
                             File file = new File(context.getFilesDir().getPath() + "/testH2");
                             FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_APPEND);
                             fos.write((query + "\n").getBytes());
@@ -120,21 +130,21 @@ public class Queries {
                         }
                         catch (SQLiteException e){
                             sqlException = 1;
-                            /*
+
                             File file = new File(context.getFilesDir().getPath() + "/failedtestH2");
                             FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_APPEND);
                             fos.write((e + "\n").getBytes());
                             fos.close();
-                            */
+
                             continue;
                         } catch (SQLException e) {
                             sqlException = 1;
-                            /*
+
                             File file = new File(context.getFilesDir().getPath() + "/failedtestH2");
                             FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_APPEND);
                             fos.write((e + "\n").getBytes());
                             fos.close();
-                            */
+
                             e.printStackTrace();
                             continue;
                         }
@@ -145,7 +155,8 @@ public class Queries {
                         if(sqlException == 0) {
                             Object breakObject = operationJson.get("delta");
                             int breakTime = Integer.parseInt(breakObject.toString());
-                            int tester = utils.sleepThread(breakTime);
+                            //int tester = utils.sleepThread(breakTime);
+                            int tester = Utils.sleepThread(breakTime);
                             if(tester != 0){
                                 return 1;
                             }

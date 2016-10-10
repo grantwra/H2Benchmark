@@ -3,6 +3,7 @@ package com.example.h2benchmark;
 import android.app.ActivityManager;
 import android.content.Context;
 
+import org.h2.Driver;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,7 +63,7 @@ public class Utils {
         return jsonObject;
     }
 
-    public int sleepThread(int interval) {
+    public static int sleepThread(int interval) {
         try {
             Thread.sleep(interval);
         } catch (Exception e) {
@@ -73,12 +74,12 @@ public class Utils {
     }
 
 
-    public Connection jdbcConnectionH2(String dbName) {
+    public static Connection jdbcConnectionH2(String dbName) {
         if(dbName == null){
             return null;
         }
         String url =
-                "jdbc:h2://data/data/com.example.h2benchmark/databases/" + dbName;
+                "jdbc:h2://data/data/com.example.h2benchmark/databases/" + dbName+";IGNORECASE=TRUE";
         Connection con;
         try {
             Class.forName("org.h2.Driver");
