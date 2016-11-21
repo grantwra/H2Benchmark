@@ -25,7 +25,15 @@ public class CreateDB {
         JSONObject jsonObject = utils.jsonStringToObject(singleJsonString);
 
         Connection con = utils.jdbcConnectionH2("H2Benchmark");
+
+        //utils.putMarker("START: App started\n", "trace_marker");
+        //utils.putMarker("{\"EVENT\":\"H2_START\"}", "trace_marker");
+
         int tester = populateH2(jsonObject, con);
+
+        //utils.putMarker("{\"EVENT\":\"H2_END\"}", "trace_marker");
+        //utils.putMarker("END: app finished\n", "trace_marker");
+
         if(tester != 0){
             return 1;
         }

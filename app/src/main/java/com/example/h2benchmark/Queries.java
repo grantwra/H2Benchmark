@@ -68,6 +68,7 @@ public class Queries {
         Connection con = Utils.jdbcConnectionH2("H2Benchmark");
         Statement stmt;
         int sqlException = 0;
+        int counter = 0;
 
         try {
             //JSONArray benchmarkArray = workloadJsonObject.getJSONArray("benchmark");
@@ -76,6 +77,7 @@ public class Queries {
                 JSONObject operationJson = benchmarkArray.getJSONObject(i);
                 Object operationObject = operationJson.get("op");
                 String operation = operationObject.toString();
+                //Connection con = Utils.jdbcConnectionH2("H2Benchmark");
                 switch (operation) {
                     case "query": {
                         //double startBdb;
@@ -92,20 +94,47 @@ public class Queries {
                             //startBdb = System.currentTimeMillis();
                             //memBeforeQuery = utils.memoryAvailable(context);
                             if(query.contains("UPDATE")){
-                                //int tester =
-                                stmt.executeUpdate(query);
-                                //if(tester == 0 || tester < 0){
-                                    //throw new SQLiteException(query);
-                                //}
+                                counter++;
+                                int tester = stmt.executeUpdate(query);
+                                if(tester == 0 || tester < 0){
+                                    stmt.close();
+                                    //con.close();
+                                    throw new SQLiteException(Integer.toString(tester));
+
+                                }
                                 stmt.close();
+                                //con.commit();
+                                /*
+                                if((counter % 50) == 0) {
+                                    Statement stmt2 = con.createStatement();
+                                    stmt2.execute("CHECKPOINT SYNC");
+                                    stmt2.close();
+                                }
+                                */
+                                //con.close();
                             }
                             else {
+                                counter++;
                                 Boolean test = stmt.execute(query);
                                 //memAfterQuery = utils.memoryAvailable(context);
                                 //endBdb = System.currentTimeMillis();
                                 stmt.close();
 
+                                //if(query.contains("INSERT")){
+                                /*
+                                if((counter % 50) == 0) {
+                                    Statement stmt2 = con.createStatement();
+                                    stmt2.execute("CHECKPOINT SYNC");
+                                    stmt2.close();
+                                }*/
+                                //}
+
+
+                                //con.close();
+
                                 if (!test) {
+                                    stmt.close();
+                                    //con.close();
                                     throw new SQLiteException(query);
 
                                 }
@@ -114,10 +143,13 @@ public class Queries {
                             //double elapsedSeconds = delta / 1000.00000;
                             //File file = new File(context.getFilesDir().getPath() + "/testH2");
                             //FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_APPEND);
+
+                            /*
                             File file = new File(context.getFilesDir().getPath() + "/testH2");
                             FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_APPEND);
                             fos.write((query + "\n").getBytes());
                             fos.close();
+                            */
                             /*
                             File file2 = new File(context.getFilesDir().getPath() + "/MemoryBDB");
                             FileOutputStream fos2;
@@ -131,19 +163,24 @@ public class Queries {
                         catch (SQLiteException e){
                             sqlException = 1;
 
+                            /*
                             File file = new File(context.getFilesDir().getPath() + "/failedtestH2");
                             FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_APPEND);
                             fos.write((e + "\n").getBytes());
                             fos.close();
+                            */
+
 
                             continue;
                         } catch (SQLException e) {
                             sqlException = 1;
 
+                            /*
                             File file = new File(context.getFilesDir().getPath() + "/failedtestH2");
                             FileOutputStream fos = context.openFileOutput(file.getName(), Context.MODE_APPEND);
                             fos.write((e + "\n").getBytes());
                             fos.close();
+                            */
 
                             e.printStackTrace();
                             continue;
@@ -169,10 +206,17 @@ public class Queries {
                         con.close();
                         return 1;
                 }
-
+                //con.close();
             }
+
+            Statement stmt2 = con.createStatement();
+            stmt2.execute("CHECKPOINT SYNC");
+            stmt2.close();
+
+            //Connection con = Utils.jdbcConnectionH2("H2Benchmark");
         } catch (JSONException e) {
             e.printStackTrace();
+
 
             try {
                 con.close();
@@ -181,8 +225,9 @@ public class Queries {
             }
 
             return 1;
-        }   catch (FileNotFoundException e) {
+        }  /* catch (FileNotFoundException e) {
             e.printStackTrace();
+
 
             try {
                 con.close();
@@ -194,6 +239,7 @@ public class Queries {
         } catch (IOException e) {
             e.printStackTrace();
 
+
             try {
                 con.close();
             } catch (SQLException e1) {
@@ -201,10 +247,11 @@ public class Queries {
             }
 
             return 1;
-        }  catch (SQLException e) {
+        } */ catch (SQLException e) {
             e.printStackTrace();
             return 1;
         }
+
 
         try {
             con.close();

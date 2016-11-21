@@ -158,5 +158,36 @@ ax2.set_ylabel('Time Spent on Ops (ms)')
 fig.suptitle(sys.argv[1])
 fig.text(0.5, 0.04, 'Total Runtime(in ms)', ha='center', va='center')
 
+#plt.show()
+
+manager = plt.get_current_fig_manager()
+manager.resize(*manager.window.maxsize())
+
+workload = ''
+if 'A' in sys.argv[1]:
+        workload = 'A'
+if 'B_T' in sys.argv[1]:
+        workload = 'B'
+if 'C_' in sys.argv[1]:
+        workload = 'C'
+if 'D' in sys.argv[1]:
+        workload = 'D'
+if 'E' in sys.argv[1]:
+        workload = 'E'
+if 'F' in sys.argv[1]:
+        workload = 'F'
+if 'IA' in sys.argv[1]:
+        workload = 'IA'
+if 'IB' in sys.argv[1]:
+        workload = 'IB'
+if 'IC' in sys.argv[1]:
+        workload = 'IC'
+
+plt.savefig('Workload' + workload + '_' + sys.argv[2] + '.png')
+
+fig1 = plt.gcf()
+#plt.savefig('Workload'+ workload + '_' + sys.argv[2] + '.png')
 plt.show()
+fig1.savefig('Workload' + workload + '_' + sys.argv[2] + '.png')
+
 
